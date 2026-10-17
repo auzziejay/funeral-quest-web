@@ -367,7 +367,7 @@ function fq_admin_view(FqGame $game, string $view, array $get, string $csrf): st
         $stats = $tail($game->system->file('stats.txt'), 60);
         $errors = $tail($game->system->file('errorlog.txt'), 40);
         return '<h2>Log</h2><p>The last ' . FqSystem::LOG_LINES . ' lines, newest at the bottom. '
-            . (!empty($game->rules['log_to_disk']) ? 'Every line is also saved to private/data/log.txt.' : "Set 'log_to_disk' => true in private/settings.php to also keep every line in private/data/log.txt.") . '</p>'
+            . (!empty($game->rules['log_to_disk']) ? 'Every line is also saved to private/data/log.txt.' : "Set 'log_to_disk' => true in private/settings.local.php through cPanel File Manager to also keep every line in private/data/log.txt.") . '</p>'
             . '<pre>' . fq_admin_e(fq_admin_plain(implode("\n", $system['log'])) ?: 'Nothing logged yet.') . '</pre>'
             . '<h2>Stats</h2><p>One line per maint: the logons and hits for that day (private/data/stats.txt).</p>'
             . '<pre>' . fq_admin_e($stats !== '' ? $stats : 'No maint has run yet.') . '</pre>'
@@ -380,7 +380,7 @@ function fq_admin_view(FqGame $game, string $view, array $get, string $csrf): st
     return '<h2>Town</h2><p>' . fq_admin_e($tournament) . '. ' . $active . ' parlors, ' . count($online) . ' on now. Last maint: '
         . fq_admin_e($state->date ?? 'never') . '.</p>'
         . '<p>Logons today: ' . $system['logonsToday'] . ' (total ' . $system['logonsTotal'] . '). Hits today: ' . $system['hitsToday'] . ' (total ' . $system['hitsTotal'] . ').</p>'
-        . '<p>Game settings live in private/settings.php. Game text (events, risks, sales pitches, the swear filter) lives in private/dist.</p>'
+        . '<p>To change server settings, edit private/settings.local.php through cPanel File Manager. Defaults and descriptions are in private/settings.php; this page does not have a server-settings editor. Game text (events, risks, sales pitches, the swear filter) lives in private/dist.</p>'
         . '<h2>New day</h2><p>Runs midnight maint right now, the same as the original server\'s New Day button.</p>'
         . fq_admin_form($csrf, 'newday', '', 'Run maint now')
         . '<h2>Reset game</h2><p>Deletes every player and starts a new game. This cannot be undone. Type RESET to confirm.</p>'

@@ -49,6 +49,16 @@ Before uploading, create `www/private/settings.local.php` using [the example](ww
 
 Upload the **contents** of `www/` into the domain's document root, including both `.htaccess` files. Enable HTTPS and PHP 8.1+, check that `/private/` returns **403 Forbidden**, then open the domain. Follow the [hosting guide](docs/hosting.md) for the complete installation and cron setup.
 
+## Admin login and server settings
+
+1. In **cPanel File Manager**, open your game's document root, then `private/settings.local.php`. If it does not exist, copy `private/settings.local.example.php` to that name.
+2. Set `admin_password` to your own password of **at least 10 characters**, then save the file. There is no built-in admin password.
+3. Visit `https://YOUR-DOMAIN/admin.php`. Enter that password in **Operator password** and click **Log on**. No admin username is required; player accounts and cPanel credentials are separate.
+
+The browser operator page manages players, online sessions, bans, logs, and maintenance. To change **server-wide settings** such as timezone, daily turns, town limits, tournament mode, or server news, edit their values in `private/settings.local.php` through cPanel File Manager and save. They take effect on the next PHP request. The operator page does not currently provide a server-settings editor, and the game's **Server Settings** link is a public, read-only information page.
+
+See [admin access and settings instructions](docs/hosting.md#admin-login-and-server-settings) for the detailed steps, password recovery, and available controls. Keep the local configuration private and preserve it during updates.
+
 ## Preview and test locally
 
 After building, with `php` on your PATH:

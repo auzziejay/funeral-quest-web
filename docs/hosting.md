@@ -123,9 +123,37 @@ Replace both paths with the host's actual PHP CLI executable and document root. 
 
 The script compares the town's saved date to its configured local date. Repeated runs on the same date do not repeatedly advance the game. Player requests also trigger maintenance; cron ensures quiet towns receive it. With a 15-minute schedule, rollover happens on the first run after midnight, rather than necessarily at exactly 00:00. After multiple days offline, the implementation advances one game day when it detects a changed date; it does not replay every missed calendar day.
 
-## Operating the town
+## Admin login and server settings
 
-Log into `/admin.php` with the operator password. The page can edit parlors, inspect online players, kick players, manage bans, read news and logs, force a new day, and reset the game. Force-new-day and reset change live game state; use them intentionally. A player marked **Always allowed on** bypasses the shared-IP rule.
+### Enable the operator login
+
+1. Sign into your hosting account's **cPanel** and open **File Manager**.
+2. Open the game's document root, then `private/settings.local.php`. This is the deployed file, rather than the `www/` path used in a source checkout. If it is missing, copy `private/settings.local.example.php` to `private/settings.local.php` first.
+3. Set `admin_password` to a unique password of at least **10 characters**, and save. Keep the surrounding PHP quotes and comma intact. There is no default operator password; a blank or shorter value keeps the page disabled.
+4. In your browser, open `https://YOUR-DOMAIN/admin.php`, replacing `YOUR-DOMAIN` with the domain where you installed the game. For local preview, use `http://127.0.0.1:8091/admin.php`.
+5. Enter the configured password in **Operator password**, then click **Log on**. The form has **no username**. It uses a separate operator login, not a player account or your cPanel password.
+
+Use **Log off** when finished. If you forget the operator password, edit `admin_password` in the deployed local configuration through cPanel File Manager, save, and log in with the replacement. Changing it invalidates existing operator sessions. After five wrong passwords from one IP, the login waits up to ten minutes; changing the password does not clear that temporary limit.
+
+### Edit server-wide settings
+
+The operator page currently has **no browser editor for server settings**. To change them, open the deployed `private/settings.local.php` in cPanel File Manager, add or edit the relevant entries in its returned array, then save. The defaults and descriptions are in `private/settings.php`; only put your overrides in the local file.
+
+For example, these entries set the town's base daily turns, maximum parlors, and login news:
+
+```php
+    'turns_per_day' => 20,
+    'max_players' => 200,
+    'server_news' => 'Welcome to our town!',
+```
+
+Add them inside the existing `return [ ... ];` array, preserving your timezone, operator password, and other overrides. Do not paste a second `return` array into the file. PHP loads saved settings on the next request; some game rules, such as daily turn allocation, apply when the relevant game action or daily refresh occurs rather than immediately rewriting every player's current stats.
+
+The **Server Settings** link above the game login opens `/pages/server.htm`. It is a public, read-only display of selected settings, not an administrator login or edit form. After saving, you can check that page for the displayed rules, or refresh the game login to check server news. Keep `private/settings.local.php` out of Git and retain it during updates.
+
+### Use the operator controls
+
+After logging into `/admin.php`, the page can edit parlors, inspect online players, kick players, manage bans, read news and logs, force a new day, and reset the game. Force-new-day and reset change live game state; use them intentionally. A player marked **Always allowed on** bypasses the shared-IP rule.
 
 Custom bans are saved in `private/data/ban.txt`; shipped bans live in `private/dist/ban.txt`. Lines have the form `ban|address|comment`. Matching is by substring, so a partial address can block several players.
 
